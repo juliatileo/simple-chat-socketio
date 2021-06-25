@@ -65,6 +65,10 @@
       top: 0;
       right: 0;
     }
+
+    #typing {
+      display: none;
+    }
   </style>
 
   <body>
@@ -77,13 +81,14 @@
 
     <ul id="messages"></ul>
     <div id="form-container">
-      <div>nick is typing...</div>
+      <div id="typing">someone is typing...</div>
       <form id="form" action="">
         <input
           id="input"
           autocomplete="off"
           disabled
           placeholder="set a nickname to send a message"
+          oninput="typing()"
         />
         <button>Send</button>
       </form>
@@ -106,6 +111,7 @@
 
           const item = document.createElement("li");
           item.textContent = `you: ${input.value}`;
+          item.style.background = "#d8d8d8";
           messages.appendChild(item);
           input.value = "";
         }
@@ -129,6 +135,7 @@
         item.textContent = `${data.previousNickname} changed its nickname to ${data.nickname}`;
         item.style.textAlign = "center";
         item.style.color = "#696969";
+        item.style.background = "#cfceb4";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
@@ -138,7 +145,8 @@
 
         item.textContent = "someone entered the chat";
         item.style.textAlign = "center";
-        item.style.color = "#21cf52";
+        item.style.color = "#fff";
+        item.style.background = "#c0d1c5";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
@@ -148,7 +156,8 @@
 
         item.textContent = `${nickname} left the chat`;
         item.style.textAlign = "center";
-        item.style.color = "#cf213e";
+        item.style.color = "#fff";
+        item.style.background = "#bda2a7";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
@@ -160,6 +169,18 @@
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+
+      socket.on("typing", () => {
+        window.clearTimeout();
+        const typingEl = document.getElementById("typing");
+
+        typingEl.style.display = "block";
+        setTimeout(() => (typingEl.style.display = "none"), 1500);
+      });
+
+      function typing() {
+        socket.emit("typing");
+      }
     </script>
   </body>
 </html>
