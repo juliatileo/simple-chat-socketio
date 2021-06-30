@@ -13,7 +13,7 @@ let users = [];
 io.on("connection", (socket) => {
   io.emit("connection");
   users.push({ id: socket.id, nickname: "someone" });
-  console.log(users);
+  io.emit("new user", { users, from: "connect" });
 
   socket.on("chat message", (msg) => {
     socket.broadcast.emit("chat message", { msg, nickname: socket.nickname });
@@ -30,7 +30,9 @@ io.on("connection", (socket) => {
         return users.splice(i, 1, { id: user.id, nickname });
       }
     });
-    console.log(users);
+
+    io.emit("new user", { users, from: "set nickname" });
+
     socket.nickname = nickname;
   });
 

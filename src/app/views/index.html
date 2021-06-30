@@ -69,6 +69,36 @@
     #typing {
       display: none;
     }
+
+    #user-list {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: #e3e3e3;
+      opacity: 0.6;
+      transition: 0.2s;
+      padding: 10px;
+      max-height: 234px;
+      overflow-y: scroll;
+    }
+
+    #user-list:hover {
+      opacity: 1;
+      transition: 0.2s;
+    }
+
+    #users-ul {
+      list-style: none;
+    }
+
+    #users-ul li::before {
+      content: "\2022"; /* Add content: \2022 is the CSS Code/unicode for a bullet */
+      color: green; /* Change the color */
+      font-weight: bold; /* If you want it to be bold */
+      display: inline-block; /* Needed to add space between the bullet and the text */
+      width: 1em; /* Also needed for space (tweak if needed) */
+      margin-left: -1em; /* Also needed for space (tweak if needed) */
+    }
   </style>
 
   <body>
@@ -77,6 +107,11 @@
         <input type="text" placeholder="nickname" id="nickinput" />
         <button type="submit">Send</button>
       </form>
+    </div>
+
+    <div id="user-list">
+      <h4>Online users</h4>
+      <ul id="users-ul"></ul>
     </div>
 
     <ul id="messages"></ul>
@@ -101,6 +136,7 @@
       const input = document.getElementById("input");
       const nickForm = document.getElementById("nickform");
       const nickInput = document.getElementById("nickinput");
+      const usersUl = document.getElementById("users-ul");
       let nickname;
 
       form.addEventListener("submit", (e) => {
@@ -181,6 +217,21 @@
       function typing() {
         socket.emit("typing");
       }
+
+      socket.on("new user", (users) => {
+        while (usersUl.lastElementChild) {
+          usersUl.removeChild(usersUl.lastElementChild);
+        }
+
+        users.users.forEach((user) => {
+          const item = document.createElement("li");
+
+          item.textContent = user.nickname;
+          usersUl.appendChild(item);
+        });
+
+        window.scrollTo(0, document.body.scrollHeight);
+      });
     </script>
   </body>
 </html>
